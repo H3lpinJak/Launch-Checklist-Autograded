@@ -7,20 +7,21 @@ function addDestinationInfo(document, name, diameter, star, distance, moons, ima
     missionTarget.innerHTML = `
                     <h2>Mission Destination</h2>
                  <ol>
-                     <li>Name: </li>
-                     <li>Diameter: </li>
+                     <li>Name: ${name}</li>
+                     <li>Diameter: ${diameter}</li>
                      <li>Star: ${star}</li>
-                     <li>Distance from Earth: </li>
-                     <li>Number of Moons: </li>
+                     <li>Distance from Earth: ${distance}</li>
+                     <li>Number of Moons: ${moons}</li>
                  </ol>
-                 <img src="">
-    `
+                 <img src="${imageUrl}">
+    `;
 }
 
 function validateInput(testInput) {
+    testInput = String(testInput);
     if (testInput.trim() === "") {
         return "Empty";
-    } else if (isNaN()) {
+    } else if (isNaN(testInput)) {
         return "Not a Number";
     } else {
         return "Is a Number";
@@ -34,48 +35,68 @@ function formSubmission(document, list, pilot, copilot, fuelLevel, cargoLevel) {
     let cargoStatus = validateInput(cargoLevel);
 
     if (pilotStatus === "Empty" || coPilotStatus === "Empty" || fuelStatus === "Empty" || cargoStatus === "Empty") {
-        alert("All fields are required!")
+        console.log("All fields are required!")
         return;
     } else if (pilotStatus !== "Is a Number" || coPilotStatus !== "Is a Number") {
-        alert("Pilot and Co-Pilot name should be a string!");
+        console.log("Pilot and Co-Pilot name should be a string!");
         return;
     } else if (fuelStatus !== "Is a Number" || cargoStatus !== "Is a Number") {
-        alert("Fuel level and cargo mass should be numbers!");
+        console.log("Fuel level and cargo mass should be numbers!");
         return;
     }
 
     document.getElementById("pilotStatus").innerHTML = `Pilot ${pilot} Ready`;
-    document.getElementById("coPilotStatus").innerHTML = `Co-Pilot ${copilot} Ready`;
+    document.getElementById("copilotStatus").innerHTML = `Co-pilot ${copilot} Ready`;
 
-    if (fuelLevel < 10000) {
-        document.getElementById("faultyitems").style.visibility = "visible";
+    if (Number(fuelLevel) < 10000) {
         document.getElementById("fuelStatus").innerHTML = "Fuel level too low for launch";
+        document.getElementById("cargoStatus").innerHTML = ""; 
         document.getElementById("launchStatus").innerHTML = "Shuttle not ready for launch";
         document.getElementById("launchStatus").style.color = 'red';
+        document.getElementById("faultyItems").style.visibility = "visible";
+
+        document.getElementById("launchChecklist").style.display = "block";
+        document.getElementById("fuelCheck").innerHTML = "✔️ Fuel Level above 10,000 liters";
+        document.getElementById("cargoCheck").innerHTML = "❌ Cargo Mass within acceptable range";
+
         return;
     }
 
-    if (cargoLevel > 10000) {
-        document.getElementById("faultyitems").style.visibility = "visible";
-        document.getElementById("cargoStatus").innerHTML = "Cargo mass too high for launch";
+    if (Number(cargoLevel) > 10000) {
+        document.getElementById("cargoStatus").innerHTML = "Cargo mass too heavy for launch";
+        document.getElementById("fuelStatus").innerHTML = ""; 
         document.getElementById("launchStatus").innerHTML = "Shuttle not ready for launch";
         document.getElementById("launchStatus").style.color = 'red';
+        document.getElementById("faultyItems").style.visibility = "visible";
+        
+        document.getElementById("launchChecklist").style.display = "block";
+        document.getElementById("fuelCheck").innerHTML = "❌ Fuel Level above 10,000 liters";
+        document.getElementById("cargoCheck").innerHTML = "✔️ Cargo Mass within acceptable range";
+
         return;
     }
 
-    document.getElementById("faultyitems").style.visibility = "hidden";
+    // Reset both fuel and cargo status if neither condition is met
+    document.getElementById("fuelStatus").innerHTML = "";
+    document.getElementById("cargoStatus").innerHTML = "";
+    document.getElementById("faultyItems").style.visibility = "visible";
+    // If everything is good, set the launch status to "Shuttle is ready for launch"
     document.getElementById("launchStatus").innerHTML = "Shuttle is ready for launch";
     document.getElementById("launchStatus").style.color = "green";
-}
-
+};
 
 async function myFetch() {
-    let planetsReturned;
-
-    planetsReturned = await fetch("https://handlers.education.launchcode.org/static/planets.json").then(function (response) {
-    });
-
-    return planetsReturned;
+    try {
+        const response = await fetch("https://handlers.education.launchcode.org/static/planets.json");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const planetsReturned = await response.json();
+        return planetsReturned;
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        throw error;
+    }
 }
 
 function pickPlanet(planets) {
