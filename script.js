@@ -9,7 +9,7 @@ window.addEventListener("load", async function() {
 
         // Pick a random planet
         const pickedPlanet = pickPlanet(listedPlanets);
-
+        
         // Add destination information after fetching planet data and selecting a random planet
         addDestinationInfo(
             document,
@@ -18,7 +18,7 @@ window.addEventListener("load", async function() {
             pickedPlanet.star,
             pickedPlanet.distance,
             pickedPlanet.moons,
-            pickedPlanet.imageUrl
+            pickedPlanet.image
         );
     } catch (error) {
         console.error('Error fetching or processing planet data:', error);
@@ -36,8 +36,8 @@ window.addEventListener("load", async function() {
         const copilotInput = document.querySelector('input[name="copilotName"]').value;
         const fuelInput = document.querySelector('input[name="fuelLevel"]').value;
         const cargoInput = document.querySelector('input[name="cargoMass"]').value;
-
+        const list = document.getElementById("faultyItems");
         // Call formSubmission with input values
-        formSubmission(document, listedPlanets, pilotInput, copilotInput, fuelInput, cargoInput);
+        formSubmission(document, list, pilotInput, copilotInput, fuelInput, cargoInput);
     });
 });
